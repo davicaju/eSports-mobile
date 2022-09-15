@@ -1,15 +1,22 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Image, View, FlatList } from "react-native";
 
 import { styles } from "./styles";
 
 import logoImg from "../../assets/logo-nlw-esports.png";
-import { Heading } from "../../components/Heading";
-import { GameCard } from "../../components/GameCard";
 
-import { GAMES } from "../../utils/games";
+import { Heading } from "../../components/Heading";
+import { GameCard, GameCardProps } from "../../components/GameCard";
 
 export function Home() {
+  const [games, setGames] = useState<GameCardProps[]>([]);
+
+  useEffect(() => {
+    fetch("http://192.168.0.245:3333/games")
+      .then((res) => res.json())
+      .then((data) => setGames(data));
+  }, []);
+
   return (
     <View style={styles.container}>
       <Image source={logoImg} style={styles.logo} />
@@ -18,14 +25,14 @@ export function Home() {
         subTitle="Select the game you want to play..."
       />
       <FlatList
-        data={GAMES}
+        data={games}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <GameCard
-            ads={item.ads}
             id={item.id}
-            cover={item.cover}
-            name={item.name}
+            title={item.title}
+            bannerUrl={item.bannerUrl}
+            _count={{ ads: item._count.ads }}
           />
         )}
         showsHorizontalScrollIndicator={false}
